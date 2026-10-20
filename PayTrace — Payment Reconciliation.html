@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PayTrace — Payment Reconciliation</title>
+<style>
+:root{--bg:#F4F6FA;--pn:#fff;--bd:#E2E8F0;--tx:#0F172A;--mu:#64748B;--nav:#0B1B3A;--ac:#2563EB;--acx:#fff;--ok:#15803D;--okb:#DCFCE7;--wn:#B45309;--wnb:#FEF3C7;--bd2:#B91C1C;--bdb:#FEE2E2;--in:#1D4ED8;--inb:#DBEAFE;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1224;--pn:#111C33;--bd:#1E2D4D;--tx:#E5EAF3;--mu:#94A3B8;--nav:#060D1C;--ac:#60A5FA;--acx:#0A1224;--ok:#4ADE80;--okb:#0F2E1D;--wn:#FBBF24;--wnb:#3A2A0A;--bd2:#F87171;--bdb:#3B1515;--in:#93C5FD;--inb:#14284F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A1224;--pn:#111C33;--bd:#1E2D4D;--tx:#E5EAF3;--mu:#94A3B8;--nav:#060D1C;--ac:#60A5FA;--acx:#0A1224;--ok:#4ADE80;--okb:#0F2E1D;--wn:#FBBF24;--wnb:#3A2A0A;--bd2:#F87171;--bdb:#3B1515;--in:#93C5FD;--inb:#14284F;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr)}
+aside{background:var(--nav);color:#CBD5E1;padding:22px 14px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;align-self:start}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:20px;padding:0 8px 22px}
+.bars{display:flex;align-items:flex-end;gap:3px}.bars i{width:5px;background:#60A5FA;display:block}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:2px}
+nav button:hover{background:rgba(255,255,255,.08)}nav button.on{background:#2563EB;color:#fff}
+.side-note{font-size:12px;color:#94A3B8;padding:18px 10px 0}
+main{padding:28px;min-width:0;max-width:1200px;width:100%}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:17px;margin:0 0 14px}.sub{color:var(--mu);margin:0 0 22px}
+.card{background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:18px}
+.grid{display:grid;gap:14px}.k5{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.kpi .n{font-size:30px;font-weight:700}.kpi .l{color:var(--mu);font-size:13px}
+.btn{background:var(--ac);color:var(--acx);border:0;border-radius:8px;padding:9px 16px;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}.btn.ghost{background:none;color:var(--ac);border:1px solid var(--ac)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.badge{display:inline-flex;gap:5px;align-items:center;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.ok{background:var(--okb);color:var(--ok)}.wn{background:var(--wnb);color:var(--wn)}.bad{background:var(--bdb);color:var(--bd2)}.in{background:var(--inb);color:var(--in)}.mu{background:var(--bd);color:var(--mu)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--mu);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+th,td{padding:10px 12px;border-bottom:1px solid var(--bd);white-space:nowrap}tr.cl{cursor:pointer}tr.cl:hover{background:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{border:1px solid var(--bd);background:var(--pn);color:var(--tx);border-radius:99px;padding:5px 14px;font:inherit;font-size:13px;cursor:pointer}.chip.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.bar{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:14px}.bar .t{flex:0 0 190px}.bar .b{flex:1;height:10px;background:var(--bd);border-radius:9px;overflow:hidden}.bar .b i{display:block;height:100%;background:var(--ac)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--bd);font-size:14px}.kv span:first-child{color:var(--mu)}
+input[type=file]{width:100%;font:inherit;color:var(--mu)}input,select,textarea{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;font:inherit;width:100%}
+.err{color:var(--bd2);font-size:13px;margin:4px 0}.note{background:var(--bg);border-left:3px solid var(--ac);padding:8px 12px;margin:8px 0;border-radius:6px;font-size:14px}.note small{color:var(--mu)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.back{background:none;border:0;color:var(--ac);cursor:pointer;font:inherit;padding:0;margin-bottom:12px}
+@media(max-width:800px){.app{grid-template-columns:1fr}aside{position:static;height:auto;padding:14px}nav{display:flex;overflow-x:auto;gap:4px}nav button{width:auto;white-space:nowrap}.side-note{display:none}main{padding:18px}.bar .t{flex-basis:120px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="logo"><span class="bars"><i style="height:12px"></i><i style="height:18px"></i><i style="height:24px"></i></span>PayTrace</div>
+  <nav id="nav"></nav>
+  <div class="side-note">Prototype using synthetic records only. PayTrace flags potential discrepancies; it does not prove errors or fraud.</div>
+</aside>
+<main id="main"></main>
+</div>
+<script>
+const $=s=>document.querySelector(s),FEE=0.02;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const inr=n=>'₹'+Number(n).toLocaleString('en-IN');
+const SAMPLE={
+orders:`orderId,orderDate,amount,status
+ORD101,2026-10-20,1000,COMPLETED
+ORD102,2026-10-20,800,COMPLETED
+ORD103,2026-10-20,350,COMPLETED
+ORD104,2026-10-20,500,COMPLETED
+ORD105,2026-10-20,1200,COMPLETED
+ORD106,2026-10-20,600,COMPLETED
+ORD107,2026-10-20,450,COMPLETED
+ORD108,2026-10-20,900,COMPLETED`,
+payments:`transactionId,orderId,amount,status
+TXN501,ORD101,1000,SUCCESS
+TXN502,ORD102,750,SUCCESS
+TXN504,ORD104,500,SUCCESS
+TXN505,ORD105,1200,SUCCESS
+TXN506,ORD106,600,SUCCESS
+TXN507,ORD107,450,SUCCESS
+TXN508,ORD107,450,SUCCESS
+TXN510,ORD108,900,SUCCESS
+TXN509,ORD999,220,SUCCESS`,
+settlements:`settlementId,transactionId,grossAmount,fee,netAmount
+SET301,TXN501,1000,20,980
+SET302,TXN502,750,15,735
+SET304,TXN504,500,10,490
+SET306,TXN506,600,12,560
+SET307,TXN507,450,9,441
+SET310,TXN510,900,18,882
+SET399,TXN777,300,6,294`};
+const SPEC={orders:['orderId','orderDate','amount','status'],payments:['transactionId','orderId','amount','status'],settlements:['settlementId','transactionId','grossAmount','fee','netAmount']};
+const NUM={orders:['amount'],payments:['amount'],settlements:['grossAmount','fee','netAmount']};
+const TYPES={MATCHED:['Matched','ok','✓'],MISSING_PAYMENT:['Missing payment','wn','!'],MISSING_SETTLEMENT:['Missing settlement','wn','!'],AMOUNT_MISMATCH:['Amount mismatch','bad','✕'],POSSIBLE_DUPLICATE:['Possible duplicate','wn','!'],SETTLEMENT_DIFFERENCE:['Settlement difference','bad','✕'],UNMATCHED_RECORD:['Unmatched record','in','?']};
+const STAT={OPEN:['Open','wn'],UNDER_REVIEW:['Under review','in'],RESOLVED:['Resolved','ok'],REOPENED:['Reopened','bad']};
+const badge=t=>{const[l,c,i]=TYPES[t];return`<span class="badge ${c}"><span aria-hidden="true">${i}</span>${l}</span>`};
+const sbadge=d=>{const v=inv[d.key];if(!v)return d.type==='MATCHED'?'<span class="badge mu">Not needed</span>':'<span class="badge mu">Not started</span>';const[l,c]=STAT[v.status];return`<span class="badge ${c}">${l}</span>`};
+
+let data={orders:[],payments:[],settlements:[]},results=[],runs=[],inv={},view='dash',filter='ALL',sel=null,status={},errors={};
+
+function parse(kind,text,fname){
+  const lines=text.trim().split(/\r?\n/),head=lines[0].split(',').map(s=>s.trim());
+  const miss=SPEC[kind].filter(c=>!head.includes(c));
+  if(miss.length)return{errors:[`${fname}: missing column(s): ${miss.join(', ')}`]};
+  const rows=[],errs=[],seen=new Set(),idk=SPEC[kind][0];
+  lines.slice(1).forEach((l,i)=>{
+    if(!l.trim())return;
+    const v=l.split(',').map(s=>s.trim()),r={},row=i+2;
+    head.forEach((h,j)=>r[h]=v[j]??'');
+    if(!r[idk])errs.push(`${fname}, row ${row}: ${idk} is required.`);
+    else if(seen.has(r[idk]))errs.push(`${fname}, row ${row}: duplicate ${idk} ${r[idk]}.`);
+    seen.add(r[idk]);
+    NUM[kind].forEach(c=>{if(!/^\d+(\.\d{1,2})?$/.test(r[c]))errs.push(`${fname}, row ${row}: ${c} must be a valid non-negative amount.`);else r[c]=+r[c]});
+    rows.push(r);
+  });
+  return errs.length?{errors:errs}:{rows};
+}
+
+function reconcile(){
+  const{orders,payments,settlements}=data,R=[];let n=0;
+  const add=o=>R.push({id:'D-'+String(++n).padStart(3,'0'),key:o.ref+':'+o.type,...o});
+  const pBy={},sBy={};
+  payments.forEach(p=>(pBy[p.orderId]??=[]).push(p));
+  settlements.forEach(s=>(sBy[s.transactionId]??=[]).push(s));
+  const oIds=new Set(orders.map(o=>o.orderId)),tIds=new Set(payments.map(p=>p.transactionId));
+  orders.forEach(o=>{
+    const ps=pBy[o.orderId]||[],b={ref:o.orderId,order:o,pay:ps[0],set:null};
+    if(!ps.length)return add({...b,type:'MISSING_PAYMENT',expected:o.amount,actual:0,rule:'Order ID lookup in payments',why:`No payment record references ${o.orderId} in the imported file. It may be delayed or absent from the file, so it needs review rather than a conclusion.`});
+    if(ps.length>1)return add({...b,type:'POSSIBLE_DUPLICATE',expected:o.amount,actual:ps.reduce((a,p)=>a+p.amount,0),rule:'One payment per order ID',why:`${ps.length} payments (${ps.map(p=>p.transactionId).join(', ')}) reference ${o.orderId}. Identical amounts alone do not prove a duplicate charge.`});
+    const p=ps[0],ss=sBy[p.transactionId]||[];b.set=ss[0];
+    if(p.amount!==o.amount)return add({...b,type:'AMOUNT_MISMATCH',expected:o.amount,actual:p.amount,rule:'Order amount = payment amount',why:`Payment ${p.transactionId} is ${inr(Math.abs(o.amount-p.amount))} ${p.amount<o.amount?'lower':'higher'} than the order amount.`});
+    const exp=+(p.amount*(1-FEE)).toFixed(2);
+    if(!ss.length)return add({...b,type:'MISSING_SETTLEMENT',expected:exp,actual:0,rule:'Settlement lookup by transaction ID',why:`No settlement record exists for ${p.transactionId}.`});
+    const act=ss.reduce((a,s)=>a+s.netAmount,0);
+    if(exp!==act)return add({...b,type:'SETTLEMENT_DIFFERENCE',expected:exp,actual:act,rule:`Net = gross − ${FEE*100}% fee`,why:`Expected net settlement is ${inr(exp)} after the ${FEE*100}% fee, but ${inr(act)} was settled.`});
+    add({...b,type:'MATCHED',expected:exp,actual:act,rule:`Net = gross − ${FEE*100}% fee`,why:'Order, payment and settlement agree under the configured fee rule.'});
+  });
+  payments.filter(p=>!oIds.has(p.orderId)).forEach(p=>add({ref:p.transactionId,order:null,pay:p,set:null,type:'UNMATCHED_RECORD',expected:0,actual:p.amount,rule:'Order ID lookup',why:`Payment ${p.transactionId} references ${p.orderId}, which is not in the imported orders.`}));
+  settlements.filter(s=>!tIds.has(s.transactionId)).forEach(s=>add({ref:s.settlementId,order:null,pay:null,set:s,type:'UNMATCHED_RECORD',expected:0,actual:s.netAmount,rule:'Transaction ID lookup',why:`Settlement ${s.settlementId} references ${s.transactionId}, which is not in the imported payments.`}));
+  return R;
+}
+function run(){
+  if(!data.orders.length||!data.payments.length||!data.settlements.length){alert('Import all three files (or load the sample data) first.');return}
+  results=reconcile();
+  const c={};results.forEach(r=>c[r.type]=(c[r.type]||0)+1);
+  runs.unshift({id:'RUN-'+String(runs.length+1).padStart(3,'0'),at:new Date().toLocaleString(),total:results.length,matched:c.MATCHED||0,flag:results.length-(c.MATCHED||0)});
+  go('results');
+}
+function loadSample(){
+  for(const k in SAMPLE){data[k]=parse(k,SAMPLE[k],k+'.csv').rows;status[k]=`Sample loaded: ${data[k].length} records`;errors[k]=[]}
+  render();
+}
+function upload(kind,inp){
+  const f=inp.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const r=parse(kind,String(rd.result),f.name);
+    if(r.errors){errors[kind]=r.errors;status[kind]='Rejected: fix the file and upload again'}
+    else{data[kind]=r.rows;errors[kind]=[];status[kind]=`${f.name}: ${r.rows.length} records imported`}
+    render()};
+  rd.readAsText(f);
+}
+function go(v,arg){view=v;if(v==='detail')sel=arg;if(arg==='INV')filter='INV';else if(v==='results'&&arg===undefined)filter='ALL';render();window.scrollTo(0,0)}
+function setFilter(f){filter=f;render()}
+
+function investigate(key){inv[key]={status:'OPEN',notes:[{t:new Date().toLocaleString(),x:'Investigation opened.'}]};render()}
+function setStatus(key,s){
+  const v=inv[key],txt=$('#note').value.trim();
+  if(s==='RESOLVED'&&!txt){alert('Add a resolution explanation in the note box before resolving.');render();return}
+  v.status=s;v.notes.push({t:new Date().toLocaleString(),x:(txt?txt+' — ':'')+'Status set to '+STAT[s][0]+'.'});render();
+}
+function addNote(key){const x=$('#note').value.trim();if(!x)return;inv[key].notes.push({t:new Date().toLocaleString(),x});render()}
+
+function nav(){
+  const items=[['dash','Dashboard'],['import','Import Data'],['results','Results'],['inv','Investigations']];
+  $('#nav').innerHTML=items.map(([k,l])=>`<button class="${view===k||(view==='detail'&&k==='results')?'on':''}" onclick="${k==='inv'?`go('results','INV')`:`go('${k}')`}">${l}</button>`).join('');
+  if(view==='results'&&filter==='INV')$('#nav').children[2].classList.remove('on'),$('#nav').children[3].classList.add('on');
+}
+const empty=`<div class="card"><h2>No reconciliation results yet</h2><p class="sub">Load the sample data or upload your three CSV files, then run reconciliation.</p><button class="btn" onclick="go('import')">Go to Import Data</button></div>`;
+
+function dash(){
+  const c={},open=Object.values(inv).filter(v=>v.status!=='RESOLVED').length,res=Object.values(inv).filter(v=>v.status==='RESOLVED').length;
+  results.forEach(r=>c[r.type]=(c[r.type]||0)+1);
+  const total=data.orders.length+data.payments.length+data.settlements.length,flag=results.length-(c.MATCHED||0);
+  const k=(n,l)=>`<div class="card kpi" style="margin:0"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+  return`<h1>Dashboard</h1><p class="sub">Compare orders, payments and settlements, then track every difference to resolution.</p>
+  <div class="grid k5" style="margin-bottom:18px">${k(total,'Records imported')}${k(c.MATCHED||0,'Matched')}${k(flag,'Potential discrepancies')}${k(open,'Open investigations')}${k(res,'Resolved')}</div>
+  ${results.length?`<div class="card"><h2>Results by type</h2>${Object.keys(TYPES).map(t=>`<div class="bar"><span class="t">${badge(t)}</span><span class="b"><i style="width:${(c[t]||0)/results.length*100}%"></i></span><b>${c[t]||0}</b></div>`).join('')}</div>`:empty}
+  <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">Recent reconciliation runs</h2><button class="btn" onclick="run()">Run reconciliation</button></div>
+  ${runs.length?`<div class="tw"><table><tr><th>Run</th><th>Time</th><th>Processed</th><th>Matched</th><th>Flagged</th></tr>${runs.slice(0,5).map(r=>`<tr><td>${r.id}</td><td>${esc(r.at)}</td><td>${r.total}</td><td>${r.matched}</td><td>${r.flag}</td></tr>`).join('')}</table></div>`:'<p class="sub" style="margin:0">No runs yet.</p>'}</div>`;
+}
+function imp(){
+  const names={orders:'Orders',payments:'Payments',settlements:'Settlements'};
+  return`<h1>Import Data</h1><p class="sub">Upload orders.csv, payments.csv and settlements.csv. Invalid files are rejected with row-level errors.</p>
+  <div class="grid g3" style="margin-bottom:18px">${Object.keys(names).map(k=>`<div class="card" style="margin:0"><h2>${names[k]}</h2><p class="sub" style="font-size:12px;margin-bottom:10px">Columns: ${SPEC[k].join(', ')}</p><input type="file" accept=".csv" aria-label="${names[k]} CSV" onchange="upload('${k}',this)"><p style="font-size:13px;margin:10px 0 0">${esc(status[k]||'Nothing imported yet')}</p>${(errors[k]||[]).map(e=>`<div class="err">✕ ${esc(e)}</div>`).join('')}</div>`).join('')}</div>
+  <div class="row"><button class="btn" onclick="run()">Run reconciliation</button><button class="btn ghost" onclick="loadSample()">Load sample data</button></div>`;
+}
+function resultsView(){
+  if(!results.length)return`<h1>Results</h1>${empty}`;
+  const f=[['ALL','All'],['MATCHED','Matched'],['REVIEW','Needs review'],['AMOUNT_MISMATCH','Amount'],['SETTLEMENT_DIFFERENCE','Settlement'],['POSSIBLE_DUPLICATE','Duplicates'],['UNMATCHED_RECORD','Unmatched'],['INV','Under investigation']];
+  const list=results.filter(r=>filter==='ALL'||(filter==='REVIEW'&&r.type!=='MATCHED')||(filter==='INV'&&inv[r.key])||filter===r.type||(filter==='MISSING'&&r.type.startsWith('MISSING')));
+  return`<h1>${filter==='INV'?'Investigations':'Reconciliation Results'}</h1><p class="sub">Select a row to see why it was flagged and to record an investigation.</p>
+  <div class="chips">${f.map(([k,l])=>`<button class="chip ${filter===k?'on':''}" onclick="setFilter('${k}')">${l}</button>`).join('')}<button class="chip ${filter==='MISSING'?'on':''}" onclick="setFilter('MISSING')">Missing records</button></div>
+  <div class="card tw"><table><tr><th>ID</th><th>Reference</th><th>Result</th><th>Expected</th><th>Actual</th><th>Difference</th><th>Investigation</th></tr>
+  ${list.map(r=>`<tr class="cl" tabindex="0" onkeydown="if(event.key==='Enter')go('detail','${r.id}')" onclick="go('detail','${r.id}')"><td>${r.id}</td><td>${esc(r.ref)}</td><td>${badge(r.type)}</td><td>${inr(r.expected)}</td><td>${inr(r.actual)}</td><td>${r.actual-r.expected?inr(r.actual-r.expected).replace('₹-','−₹'):'—'}</td><td>${sbadge(r)}</td></tr>`).join('')||'<tr><td colspan="7">No records for this filter.</td></tr>'}</table></div>`;
+}
+const kv=(o,keys)=>o?keys.map(k=>`<div class="kv"><span>${k}</span><span>${/amount|fee|net|gross/i.test(k)?inr(o[k]):esc(o[k])}</span></div>`).join(''):'<p class="sub" style="margin:0">Not found in imported data.</p>';
+function detail(){
+  const d=results.find(r=>r.id===sel);if(!d)return resultsView();
+  const v=inv[d.key],diff=d.actual-d.expected;
+  return`<button class="back" onclick="go('results')">← Back to results</button><h1>${esc(d.ref)} ${badge(d.type)}</h1><p class="sub">${d.id} · ${esc(d.rule)}</p>
+  <div class="grid g3" style="margin-bottom:18px"><div class="card" style="margin:0"><h2>Order</h2>${kv(d.order,['orderId','orderDate','amount','status'])}</div><div class="card" style="margin:0"><h2>Payment</h2>${kv(d.pay,['transactionId','orderId','amount','status'])}</div><div class="card" style="margin:0"><h2>Settlement</h2>${kv(d.set,['settlementId','transactionId','grossAmount','fee','netAmount'])}</div></div>
+  <div class="card"><h2>Why it was flagged</h2><div class="kv"><span>Expected</span><b>${inr(d.expected)}</b></div><div class="kv"><span>Actual</span><b>${inr(d.actual)}</b></div><div class="kv"><span>Difference</span><b>${diff?inr(diff).replace('₹-','−₹'):'None'}</b></div><p style="margin:12px 0 0">${esc(d.why)}</p></div>
+  <div class="card"><h2>Investigation</h2>${d.type==='MATCHED'?'<p class="sub" style="margin:0">No investigation needed for matched records.</p>':!v?`<p class="sub">No investigation started for this discrepancy.</p><button class="btn" onclick="investigate('${d.key}')">Open investigation</button>`:`
+  <div class="row" style="margin-bottom:12px"><span class="badge ${STAT[v.status][1]}">${STAT[v.status][0]}</span><label class="row" style="margin-left:auto">Status <select style="width:auto" aria-label="Status" onchange="setStatus('${d.key}',this.value)">${Object.keys(STAT).map(s=>`<option value="${s}" ${s===v.status?'selected':''}>${STAT[s][0]}</option>`).join('')}</select></label></div>
+  <textarea id="note" rows="3" placeholder="Add a note or a resolution explanation backed by evidence"></textarea><div style="margin:10px 0"><button class="btn" onclick="addNote('${d.key}')">Add note</button></div>
+  ${v.notes.slice().reverse().map(n=>`<div class="note">${esc(n.x)}<br><small>${esc(n.t)}</small></div>`).join('')}`}</div>`;
+}
+function render(){
+  nav();
+  $('#main').innerHTML=view==='dash'?dash():view==='import'?imp():view==='results'?resultsView():detail();
+}
+loadSample();run();go('dash');
+</script>
+</body>
+</html>
